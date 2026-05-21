@@ -1,0 +1,53 @@
+// Schema definition
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Flight {
+  id             String    @id @default(cuid())
+  number         String    @unique
+  origin         Airport   @relation("OriginFlight", fields: [originId], references: [code])
+  originId       String
+  destination    Airport   @relation("DestinationFlight", fields: [destinationId], references: [code])
+  destinationId  String
+  deptTime       DateTime
+  arrivalTime    DateTime
+  price          Int
+  currency       String
+  totalSeats     Int
+  availableSeats Int
+  bookings       Booking[]
+}
+
+model User {
+  id       String    @id @default(cuid())
+  name     String
+  passport String
+  bookings Booking[]
+}
+
+model Booking {
+  bookingID String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  flight    Flight   @relation(fields: [flightId], references: [id])
+  flightId  String
+  timestamp DateTime @default(now())
+  seat      String   @db.VarChar(4)
+
+  @@unique([flightId, seat])
+}
+
+model Airport {
+  code           String   @id
+  name           String   @unique
+  city           String
+  originAirports Flight[] @relation("OriginFlight")
+
+  destinationAirports Flight[] @relation("DestinationFlight")
+}

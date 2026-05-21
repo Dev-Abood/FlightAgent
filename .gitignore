@@ -86,3 +86,4 @@ temp/
 # Optional: local config files
 # =====================
 *.local
+/generated/prisma
